@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
     public static String[] conf = new String[10];
@@ -6,219 +7,227 @@ public class Main {
     public static List<Accout> acc = new ArrayList<>();
     public static List<Man> man = new ArrayList<>();
     public static List<String> catalog = new ArrayList<>();
-    public static Datacontrol dc = new Datacontrol();
-    public static Scanner sc = new Scanner(System.in);
-    public static boolean menu = true;
-
+    public static Scanner sc = new Scanner(System.in) ;
     public static void main(String[] args) {
+        
 
         String op = "98";
-        dc.datas(man);
-        dc.catalogs(catalog);
-        dc.config(conf, word);
+        datas();
+        catalogs();
+        config(conf);
         login();
-
+        
         doMainMenu(true);
-        op = sc.nextLine();
-
+        op = sc.nextLine() ;
+        
         while (!op.equals("99")) {
             doop(op);
-            
-            doMainMenu(menu);
+            doMainMenu(true);
             op = sc.nextLine();
 
         }
-        sc.close();
     }
 
-    public static void doMainMenu(boolean showMainMenu) {
-        if(showMainMenu){
+    public static void doMainMenu(boolean showMainManu) {
         System.out.print("****************************************\n" +
-                "1.Show_a 2.Show_p 3.Show_by_c 4.Search 5.Mod 6.Del 7.Add_cont \n" +
-                "8.Add_cat 9.Show_cat 10.Set_field 11.Set_page 12.Set_order 13.Set_sort\n" +
-                "14.Show_r 15.Opt 16.Show_acc 17.Add_acc 18.Del_acc 19.Mod_acc 20.Logout 99.Exit\n" +
-                "****************************************\n");}
-
+                "1. Show_a 2. Show_p 3.Show_by_c 4. Search 5.Mod 6.Del 7.Add_cont\n" +
+                "8.Add_cat 9. Show_cat 10.Set_field 11.Set_page 12.Set_order 13.Set_sort\n" +
+                "14. Show_r 15.Opt 16. Show_acc 17.Add_acc 18.Del_acc 19.Mod_acc 20. Logout 99. Exit\n" +
+                "****************************************\n");
     }
 
     public static void backorexit() {
 
         System.out.println("[0].Go_back_to_main_menu [99].Exit_system");
         String a = sc.nextLine();
-        while(!a.matches("0|99"))
-        {   
-            System.out.println("Error_wrong_command");
-                System.out.println("Please_enter_again:");
-                System.out.println();
-                a = sc.nextLine() ;
-
-        }
         if (a.equals("0")) {
             ;
-        } else {
+        } else
+        {   
             System.exit(0);
         }
-        
     }
 
     public static void login() {
-        dc.inputaccount(acc);
 
-        String b, c, d;
+        try {
+            acc.clear();
+            Scanner s = new Scanner(new File("account.txt"));
 
-        int count = 0;
-        Boolean success = false;
-        while (true) {
-            if (count < 3) {
-                System.out.println("Account:");
-                b = sc.nextLine().trim();
-                System.out.println("Password:");
-                c = sc.nextLine().trim();
-                System.out.println("Verify_string:" + conf[8]);
-                System.out.println("Input_Verify_string:");
-                d = sc.nextLine().trim();
-                for (Accout a : acc) {
+            while (s.hasNext()) {
+                String a = s.nextLine().trim();
+                String b = s.nextLine().trim();
+                acc.add(new Accout(a, b));
+            }
 
-                    if (b.equals(a.getAccount().trim()) && c.equals(a.getPassword().trim()) && d.equals(conf[8])) {
-                        success = true;
-                        break;
+            s.close();
+            
+            String b, c, d;
 
+            int count = 0;
+            Boolean success = false;
+            while (true) {
+                if (count < 3) {
+                    System.out.println("Account:");
+                    b = sc.nextLine().trim();
+                    System.out.println("Password:");
+                    c = sc.nextLine().trim();
+                    System.out.println("Verify_string:" + conf[8]);
+                    System.out.println("Input_Verify_string:");
+                    d = sc.nextLine().trim();
+                    for (Accout a : acc) {
+
+                        if (b.equals(a.getAccount().trim()) && c.equals(a.getPassword().trim()) && d.equals(conf[8])) {
+                            success = true;
+                            break;
+
+                        }
                     }
-                }
-                if (success) {
-                    System.out.println("Login_success");
-                    break;
-                } else {
-                    System.out.println("Error_wrong_account_password_or_verify_string");
-                    count++;
-                }
-            } else
-                System.exit(0);
+                    if (success)
+                        {   System.out.println("Login_success");
+                            break;}
+                    else {
+                        System.out.println("Error_wrong_account_password_or_verify_string");
+                        count++;
+                    }
+                } else
+                    System.exit(0);
 
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();;
         }
-
     }
 
     public static void doop(String a) {
         switch (a) {
             case "1":
-                menu = true;
                 doShowAll();
                 backorexit();
-
                 break;
             case "2":
-                menu = true;
                 doShowPerPage();
                 break;
             case "3":
-                menu = true;
                 doShowByCatalog();
                 break;
             case "4":
-                menu = true;
                 doSearch();
                 break;
             case "5":
-                menu = true;
                 doModify();
                 backorexit();
                 break;
             case "6":
-                menu = true;
                 doDelete();
                 backorexit();
                 break;
             case "7":
-                menu = true;
                 doAddContact();
                 backorexit();
                 break;
             case "8":
-                menu = true;
                 doAddCatalog();
                 backorexit();
                 break;
             case "9":
-                menu = true;
                 doShowAllCatalog();
-                backorexit();
                 break;
             case "10":
-                menu = true;
                 doSetDisplayField();
                 confupdate();
-                backorexit();
                 break;
             case "11":
-                menu = true;
                 doSetViewPerpage();
                 confupdate();
                 backorexit();
                 break;
             case "12":
-                menu = true;
                 doSetOrder();
                 confupdate();
-                backorexit();
                 break;
             case "13":
-                menu = true;
                 dosetsort();
                 confupdate();
                 backorexit();
                 break;
             case "14":
-                menu = true;
                 doshowr();
                 backorexit();
                 break;
             case "15":
-                menu = true;
                 doOpt();
                 backorexit();
                 break;
             case "16":
-                menu = true;
                 doshowacc();
                 backorexit();
                 break;
             case "17":
-                menu = true;
                 doaddacc();
                 backorexit();
                 break;
             case "18":
-                menu = true;
                 dodelete();
                 backorexit();
                 break;
             case "19":
-                menu = true;
                 domodacc();
                 backorexit();
                 break;
             case "20":
-                menu = true;
                 dologout();
                 break;
             case "99":
-                menu = true;
                 sc.close();
                 System.exit(0);
                 break;
             default:
                 System.out.println("Error_wrong_command");
                 System.out.println("Please_enter_again:");
-                System.out.println();
-                menu = false;
+                doMainMenu(false);
                 break;
 
         }
 
     }
 
-    public static Comparator<Man> getmancomp() {
+    // 把CAT資料存進LIST
+    public static void catalogs() {
+        try {
+            Scanner sca = new Scanner(new File("catalog.txt"));
+            String temp;
+            while (sca.hasNextLine()) {
+                temp = sca.nextLine();
+                catalog.add(temp);
+            }
+            sca.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    // 把資料存進list
+    public static void datas() {
+        try {
+            Scanner sca = new Scanner(new File("data.txt"));
+            String temp;
+            while (sca.hasNextLine()) {
+                temp = sca.nextLine();
+                man.add(new Man(temp));
+            }
+            sca.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+
+    }
+
+    // 建立一個能得到定義好的comparator
+    public static Comparator<Man> getcomp() {
 
         Comparator<Man> comp = new Comparator<Man>() {
             @Override
@@ -241,18 +250,8 @@ public class Main {
         };
         return comp;
     }
-    public static Comparator<Accout> getacccomp() {
 
-        Comparator<Accout> comp = new Comparator<Accout>() {
-            @Override
-            public int compare(Accout one, Accout two) {
-               return one.getAccount().compareTo(two.getAccount()) ;
-            }
-
-        };
-        return comp;
-    }
-
+    // 印出資料
     public static void show(Man a, String b) {
         if (b.equals("Condition")) {
             System.out.println(a.idformatString() + a.nameformatString(Boolean.parseBoolean(conf[3]))
@@ -270,13 +269,13 @@ public class Main {
 
     }
 
-    // 1.
+    // 1.建一個list去依據順序或反序輸出
     public static void doShowAll() {
         System.out.print(getPeopleTitle(Boolean.parseBoolean(conf[3]), Boolean.parseBoolean(conf[2]),
                 Boolean.parseBoolean(conf[5]),
                 Boolean.parseBoolean(conf[6]), Boolean.parseBoolean(conf[4])));
         List<Man> newman = new ArrayList<>(man);
-        Collections.sort(newman, getmancomp());
+        Collections.sort(newman, getcomp());
         for (Man a : newman) {
             show(a, "Condition");
         }
@@ -291,127 +290,132 @@ public class Main {
         String a = sc.nextLine();
         String choice;
         boolean restart = true;
-        List<Man> newman = new ArrayList<>(man);
-        Collections.sort(newman, getmancomp());
+        List<Man> newman = new ArrayList<>(man) ;
+        Collections.sort(newman,getcomp());
         while (restart) {
             int now = 0;
-            int count = 0;
+            int count = 0 ;
             if (a.equals("3") || a.equals("5") || a.equals("10")) {
-                if (Integer.valueOf(a) >= newman.size()) {
-                    for (Man m : newman) {
-                        show(m, "Condition");
-
+                if(Integer.valueOf(a)>=newman.size())
+                {
+                    for(Man m :newman)
+                    {
+                        show(m,"Condition") ;
+                        
                     }
                     System.out.println("[0].Go_back_to_main_menu [99].Exit_system");
-                    String be = sc.nextLine();
-                    if (be.equals("0"))
-                        return;
+                    String be = sc.nextLine() ;
+                    if(be.equals("0"))
+                    return ;
                     else
-                        System.exit(0);
+                    System.exit(0);
                 }
-
+                
                 while (now < newman.size()) {
                     show(newman.get(now), "Condition");
                     now++;
-                    count++;
+                    count++ ;
                     if (now == Integer.valueOf(a) && now < newman.size()) {
                         System.out.println("[2].Next_page [0].Go_back_to_main_menu [99].Exit_system");
                         choice = sc.nextLine();
-                        if (choice.equals("2")) {
-                            count = 0;
+                        if (choice.equals("2"))
+                        {   count = 0 ;
                             continue;
-                        } else if (choice.equals("0"))
+                        }
+                        else if (choice.equals("0"))
                             return;
                         else
                             System.exit(0);
                     } else if (count % Integer.valueOf(a) == 0 && now < newman.size()) {
                         System.out.println("[1].Last_page [2].Next_page [0].Go_back_to_main_menu [99].Exit_system");
                         choice = sc.nextLine();
-                        if (choice.equals("2")) {
-                            count = 0;
-                            continue;
-                        } else if (choice.equals("1")) {
-                            {
-                                now -= (Integer.valueOf(a) * 2);
-                                count = 0;
+                        if (choice.equals("2"))
+                            {   count = 0 ;
+                                continue;}
+                        else if (choice.equals("1")) {
+                            {now -= (Integer.valueOf(a)*2) ;
+                             count = 0 ;   
                             }
                         } else if (choice.equals("0"))
                             return;
                         else
                             System.exit(0);
-                    } else if (now == newman.size()) {
-                        System.out.println("[1].Last_page [0].Go_back_to_main_menu [99].Exit_system");
+                    } else if(now==newman.size())
+                        {
+                            System.out.println("[1].Last_page [0].Go_back_to_main_menu [99].Exit_system");
                         choice = sc.nextLine();
-                        if (choice.equals("1")) {
-                            {
-                                now -= (Integer.valueOf(a) + count);
-                                count = 0;
+                         if (choice.equals("1")) {
+                            {now -= (Integer.valueOf(a)+count) ;
+                                count = 0 ;
                             }
                         } else if (choice.equals("0"))
                             return;
                         else
-                            System.exit(0);
-                    } else
-                        ;
+                            System.exit(0); 
+                        }
+                    else
+                    ;
 
                 }
 
             } else if (a.equals("d")) {
-                if (Integer.valueOf(conf[7]) >= newman.size()) {
-                    for (Man m : newman) {
-                        show(m, "Condition");
-
+                if(Integer.valueOf(conf[7])>=newman.size())
+                {
+                    for(Man m :newman)
+                    {
+                        show(m,"Condition") ;
+                        
                     }
                     System.out.println("[0].Go_back_to_main_menu [99].Exit_system");
-                    String be = sc.nextLine();
-                    if (be.equals("0"))
-                        return;
+                    String be = sc.nextLine() ;
+                    if(be.equals("0"))
+                    return ;
                     else
-                        System.exit(0);
+                    System.exit(0);
                 }
                 while (now < man.size()) {
                     show(newman.get(now), "Condition");
                     now++;
-                    count++;
+                    count++ ;
                     if (now == Integer.valueOf(conf[7]) && now < newman.size()) {
                         System.out.println("[2].Next_page [0].Go_back_to_main_menu [99].Exit_system");
                         choice = sc.nextLine();
-                        if (choice.equals("2")) {
-                            count = 0;
-                            continue;
-                        } else if (choice.equals("0"))
+                        if (choice.equals("2"))
+                           {count = 0 ; 
+                            continue;}
+                        else if (choice.equals("0"))
                             return;
                         else
                             System.exit(0);
-                    } else if (count % Integer.valueOf(conf[7]) == 0 && now < newman.size()) {
+                    } else if (count % Integer.valueOf(conf[7]) == 0 && now< newman.size()) {
                         System.out.println("[1].Last_page [2].Next_page [0].Go_back_to_main_menu [99].Exit_system");
                         choice = sc.nextLine();
-                        if (choice.equals("2")) {
-                            count = 0;
-                            continue;
-                        } else if (choice.equals("1")) {
-                            {
-                                now -= (Integer.valueOf(conf[7]) * 2);
-                                count = 0;
-                            }
+                        if (choice.equals("2"))
+                            {   count = 0 ;
+                                continue;}
+                        else if (choice.equals("1")) {
+                           { now -= (Integer.valueOf(conf[7])*2) ;
+                            count = 0  ;
+                           }
                         } else if (choice.equals("0"))
                             return;
                         else
                             System.exit(0);
-                    } else if (now == newman.size()) {
-                        System.out.println("[1].Last_page [0].Go_back_to_main_menu [99].Exit_system");
+                    } else if(now==newman.size())
+                        {
+                            System.out.println("[1].Last_page [0].Go_back_to_main_menu [99].Exit_system");
                         choice = sc.nextLine();
-                        if (choice.equals("1")) {
-                            {
-                                now -= (Integer.valueOf(conf[7]) + count);
-                                count = 0;
+                         if (choice.equals("1")) {
+                            {now -= (Integer.valueOf(conf[7])+count) ;
+                            count = 0 ;
                             }
                         } else if (choice.equals("0"))
                             return;
                         else
-                            System.exit(0);
-                    } else
-                        ;
+                            System.exit(0); 
+                        }
+                    else
+                    ;
                 }
 
             } else if (a.equals("0"))
@@ -434,10 +438,10 @@ public class Main {
 
     // 3
     public static void doShowByCatalog() {
-        System.out.println("Catalogs:");
+        System.out.print("Catalog:");
         char list = 'a';
         for (String a : catalog) {
-            System.out.print("[" + list + "]." + a + " ");
+            System.out.print("[" + list + "]" + a + " ");
             list += 1;
         }
         System.out.println("\n[0].Go_back_to_main_menu [99].Exit_system");
@@ -460,6 +464,7 @@ public class Main {
                     Boolean.parseBoolean(conf[5]),
                     Boolean.parseBoolean(conf[6]), Boolean.parseBoolean(conf[4])));
             List<Man> newman = new ArrayList<>(man);
+            Collections.sort(newman, getcomp());
             for (Man m : newman) {
 
                 if (m.getCatalog().equals(catalog.get(index)))
@@ -485,13 +490,11 @@ public class Main {
                     System.out.println("Input_target:");
                     while (true) {
                         b = sc.nextLine();
-                        b = String.format("%4s", b).replace(" ","0") ;
                         if (!b.matches("[0-9]{4}")) {
                             System.out.println("Error_wrong_data\nPlease_input_again:");
                         } else
                             break;
                     }
-                    
                     for (Man x : man) {
                         if (Integer.valueOf(b) == Integer.valueOf(x.getId())) {
                             result.add(x);
@@ -507,7 +510,6 @@ public class Main {
                         } else
                             break;
                     }
-                   
                     for (Man x : man) {
                         if (b.equals(x.getName())) {
                             result.add(x);
@@ -525,7 +527,6 @@ public class Main {
                         } else
                             System.out.println("Error_wrong_data\nPlease_input_again:");
                     }
-                   
                     for (Man x : man) {
                         if (b.equals(x.getBirth())) {
                             result.add(x);
@@ -536,7 +537,6 @@ public class Main {
                 if (!find)
                     System.out.println("Error_no_result");
                 else {
-                     System.out.println("Search_result:");
                     System.out.print(getPeopleTitle(find, find, find, find, find));
                     for (Man y : result) {
                         show(y, "All");
@@ -566,7 +566,30 @@ public class Main {
         }
     }
 
-    // title
+    // 讀檔案內的十種資料存到conf的陣列內
+    public static void config(String[] conf)
+
+    {
+        try {
+            Scanner s = new Scanner(new File("config.txt"));
+            String temp;
+            int count = 0;
+
+            while (count < 10) {
+                word[count] = s.next().trim();
+                temp = s.next();
+                conf[count] = temp.trim();
+                count++;
+            }
+            s.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+
+    }
+
+    // 標題的輸出與判斷
     public static String getPeopleTitle(boolean show_name, boolean show_phone, boolean show_catalog, boolean show_email,
             boolean show_birthday) {
         String title = "[ID] ";
@@ -596,58 +619,74 @@ public class Main {
 
     }
 
-    // update myconfig.txt
+    // 更新myconfig.txt檔案
     public static void confupdate() {
-        dc.confupdate(word, conf);
+        try {
+            FileWriter w = new FileWriter("config.txt");
+
+            for (int i = 0; i < 10; i++) {
+                w.write(word[i] + " " + conf[i] + "\n");
+
+            }
+            w.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
 
     }
 
-    // update catalog.txt
+    // 更新catalog.txt檔案
     public static void updatecatalog() {
-        Collections.sort(catalog);
-        dc.updatecata(catalog);
+        try {
+            FileWriter f = new FileWriter("catalog.txt");
+            for (String x : catalog) {
+                f.write(x + "\n");
+            }
+            f.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
 
     // 5
     public static void doModify() {
-        String id = "";
-        String name = "";
-        String phone = "";
-        String cat = "";
-        String email = "";
-        String birth = "";
+        String id;
+        String name;
+        String phone;
+        String cat;
+        String email;
+        String birth;
         int index = -1;
         System.out.println("Input_ID_to_be_modified:");
-        
+        id = sc.nextLine();
         id = sc.nextLine();
         for (Man m : man) {
             if (Integer.valueOf(id) == Integer.valueOf(m.getId())) {
                 index = man.indexOf(m);
             }
         }
-        System.out.println("Search_result:");
-       System.out.println( getPeopleTitle(true, true, true, true, true)); 
-        show(man.get(index), "All");
-        
         System.out.println("New_name:");
         name = sc.nextLine();
         if (name.isEmpty())
             ;
         else
-        man.get(index).setName(name.substring(0, 1).toUpperCase() + name.substring(1, name.length()));
+            man.get(index).setName(name.substring(0, 1).toUpperCase() + name.substring(1, name.length()));
         System.out.println("New_phone:");
         phone = sc.nextLine();
         if (phone.isEmpty())
             ;
         else
             man.get(index).setPhone(phone);
-        System.out.print("Catalogs:");
+        System.out.print("Catalog:");
         char list = 'a';
         for (String a : catalog) {
-            System.out.print("[" + list + "]." + a + " ");
+            System.out.print("[" + list + "]" + a + " ");
             list += 1;
         }
-        System.out.println("\nNew_catalog:");
+        System.out.println("\nCatalog:");
         cat = sc.nextLine();
 
         if (cat.isEmpty())
@@ -720,10 +759,10 @@ public class Main {
             }
         }
 
-        System.out.print("Catalogs:");
+        System.out.print("Catalog:");
         char index = 'a';
         for (String a : catalog) {
-            System.out.print("[" + index + "]." + a + " ");
+            System.out.print("[" + index + "]" + a + " ");
             index += 1;
         }
         System.out.println("\nCatalog:");
@@ -789,7 +828,6 @@ public class Main {
                 if (exist) {
                     System.out.println("Error_catalog_existed");
                     System.out.println("Please_input_new_catalog:");
-                    exist = false ;
                 } else {
 
                     catalog.add(a);
@@ -817,36 +855,32 @@ public class Main {
         String in;
         System.out.println(
                 "[1].Show_name:" + stoi(conf[3]) + " " + "[2].Show_phone:" + stoi(conf[2]) + " " + "[3].Show_cat:"
-                        + stoi(conf[5]) + " " + "[4].Show_email:" + stoi(conf[6]) + " " + "[5].Show_bd:" + stoi(conf[4]));
-        System.out.println("New_show_name(0/1):");
+                        + stoi(conf[5]) + " " + "[4].Show_cat:" + stoi(conf[6]) + " " + "[5].Show_bd:" + stoi(conf[4]));
+        System.out.print("New_show_name(0/1):");
         in = sc.nextLine();
-        conf[3] = stos(in);
-        System.out.println("New_show_phone(0/1):");
+        conf[3] = stos(in) ;
+        System.out.print("New_show_phone(0/1):");
         in = sc.nextLine();
-        conf[2] = stos(in);
-        System.out.println("New_show_cat(0/1):");
+        conf[2] = stos(in) ;
+        System.out.print("New_show_cat(0/1):");
         in = sc.nextLine();
         conf[5] = stos(in);
-        System.out.println("New_show_email(0/1):");
+        System.out.print("New_show_email(0/1):");
         in = sc.nextLine();
-        conf[6] = stos(in);
-        System.out.println("New_show_bd(0/1):");
+        conf[6] = stos(in) ;
+        System.out.print("New_show_bd(0/1):");
         in = sc.nextLine();
-        conf[4] = stos(in);
+        conf[4] = stos(in) ;
         System.out.println();
-        System.out.println(
-                "[1].Show_name:" + stoi(conf[3]) + " " + "[2].Show_phone:" + stoi(conf[2]) + " " + "[3].Show_cat:"
-                        + stoi(conf[5]) + " " + "[4].Show_email:" + stoi(conf[6]) + " " + "[5].Show_bd:" + stoi(conf[4]));
     }
 
     // 10-1 stringto int
     public static int stoi(String a) {
         return (a.equals("true") ? 1 : 0);
     }
-
-    // 10-2 STRING 1/0 TO String true false
-    public static String stos(String a) {
-        return (a.equals("0") ? "false" : "true");
+    //10-2 STRING 1/0 TO String true false
+    public static String stos(String a){
+        return (a.equals("0")?"false":"true") ;
     }
 
     // 11
@@ -918,10 +952,18 @@ public class Main {
     // 14
     public static void doshowr() {
 
-        System.out.print(getPeopleTitle(true, true, true, true, true));
-        List<Man> raw = new ArrayList<>(dc.getrawlist());
-        for (Man a : raw) {
-            show(a, "All");
+        try {
+            System.out.print(getPeopleTitle(true, true, true, true, true));
+            Scanner s = new Scanner(new File("data.txt"));
+            while (s.hasNextLine()) {
+                String a = s.nextLine();
+                Man b = new Man(a);
+                show(b, "All");
+            }
+            s.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(0);
         }
     }
 
@@ -935,17 +977,34 @@ public class Main {
             a = sc.nextLine();
         }
         if (a.equals("y")) {
-            dc.opt(conf, getmancomp(), man);
+            try {
+                FileWriter f = new FileWriter("test.txt");
+                List<Man> newman = new ArrayList<>(man);
+                Collections.sort(newman, getcomp());
+                f.write(getPeopleTitle(Boolean.parseBoolean(conf[3]), Boolean.parseBoolean(conf[2]),
+                        Boolean.parseBoolean(conf[5]),
+                        Boolean.parseBoolean(conf[6]), Boolean.parseBoolean(conf[4])));
+                for (Man m : newman) {
+                    f.write((m.idformatString() + m.nameformatString(Boolean.parseBoolean(conf[3]))
+                            + m.phoneformatString(Boolean.parseBoolean(conf[2]))
+                            + m.catalogformatString(Boolean.parseBoolean(conf[5]))
+                            + m.emailformatString(Boolean.parseBoolean(conf[6]))
+                            + m.birthformatString(Boolean.parseBoolean(conf[4]))) + "\n");
+                }
+                f.close();
+                System.out.println("Data_optimize_success");
+            } catch (IOException e) {
+                ;
+            }
         } else
-            System.out.println("Data_optimize_denied");
+        System.out.println("Data_optimize_denied");
     }
 
     // 16.
     public static void doshowacc() {
-        List<Accout> accout = new ArrayList<>(acc) ;
-        Collections.sort(accout,getacccomp());
+
         System.out.println("[Account]    [Password]");
-        for (Accout a : accout) {
+        for (Accout a : acc) {
             System.out.println(a.accountformatString() + a.passwordformatString());
         }
     }
@@ -977,7 +1036,18 @@ public class Main {
     }
 
     public static void updateacc() {
-        dc.updateacc(acc);
+        try {
+            FileWriter w = new FileWriter("account.txt");
+
+            for (Accout ac : acc) {
+                w.write(ac.getAccount() + "\n" + ac.getPassword() + "\n");
+            }
+            w.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
 
     // 18
@@ -1016,7 +1086,7 @@ public class Main {
         }
         int acclen = 100;
         int passlen = 100;
-        String a ;
+        String a = sc.nextLine();
         System.out.println("New_account:");
         while (true) {
             a = sc.nextLine().trim();
@@ -1028,7 +1098,7 @@ public class Main {
             } else
                 System.out.println("Too_long_please_try_again:");
         }
-        System.out.println("New_password:");
+        System.out.println("New_password");
         while (true) {
             a = sc.nextLine().trim();
             if (a.isEmpty())
@@ -1047,12 +1117,12 @@ public class Main {
     public static void dologout() {
         System.out.println("Please_confirm_to_logout_y_or_n:");
 
-        String a = sc.nextLine();
+        String a = sc.nextLine() ;
         while (!a.equals("y") && !a.equals("n")) {
-
+           
             System.out.println("Error_input");
             System.out.println("Please_input_again:");
-            a = sc.nextLine();
+            a = sc.nextLine() ;
         }
         if (a.equals("y"))
             login();
